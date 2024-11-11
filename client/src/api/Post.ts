@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
+import { validateRespons } from './validateResponse';
 
 export const PostSchema = z.object({
 	id: z.string(),
@@ -78,4 +79,18 @@ export function usePostList() {
 		refetch,
 	};
 }
- 
+
+
+export function createPost(text: string): Promise<void> {
+	return fetch("/api/posts", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			text,
+		}),
+	})
+	.then(validateRespons)
+	.then(() => undefined);
+}
