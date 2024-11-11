@@ -12,6 +12,8 @@ export interface IPostFormProps {}
 export const PostForm: FC<IPostFormProps> = () => {
   const [text, setText] = useState("");
 
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
+
   const createPostMutation = useMutation(
     {
       mutationFn: () => createPost(text),
@@ -25,7 +27,12 @@ export const PostForm: FC<IPostFormProps> = () => {
   const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
 
-    createPostMutation.mutate();
+    if (text.length > 10) {
+      createPostMutation.mutate();
+    } else {
+      setErrorMessage("Введите более 10 символов");
+    }
+
   };
 
   return (
@@ -34,8 +41,14 @@ export const PostForm: FC<IPostFormProps> = () => {
         <textarea 
           className="post-form__input"
           value={text}
-          onChange={(event) => setText(event.currentTarget.value)} />
+          onChange={(event) => {
+            setText(event.currentTarget.value);
+            setErrorMessage(undefined);
+          }}
+        />
       </FormField>
+
+      {errorMessage && <span style={{ color: "red" }}>{errorMessage}</span>}
 
       <Button 
         type="submit" 
